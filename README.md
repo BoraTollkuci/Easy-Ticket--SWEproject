@@ -12,12 +12,12 @@ Admin.
 
 The goal of the application is to digitalize the ticket booking process, reduce manual ticket handling, and provide a fast and convenient travel experience for passengers and transport operators.
 
-# Members
--Bora Tollkuçi
--Vikena Xhemali
--Ornela Senja
--Rebeka Çekini
--Steisi Kurti
--Paula Dollani
--Trevis Koxha
+**Team Members**
+- Bora Tollkuçi  
+- Vikena Xhemali  
+- Trevis Koxha  
+- Ornela Senja  
+- Rebeka Çekini  
+- Steisi Kurti  
+- Paula Dollani
 
