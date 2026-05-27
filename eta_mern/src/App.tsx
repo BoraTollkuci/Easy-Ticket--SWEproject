@@ -25,7 +25,6 @@ import Schedules from "./pages/Schedules";
 import RoutesPage from "./pages/Routes";
 import Tickets from "./pages/Tickets";
 import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
 import Contact from "./pages/Contact";
 import HelpCenter from "./pages/HelpCenter";
 import FAQ from "./pages/FAQ";
