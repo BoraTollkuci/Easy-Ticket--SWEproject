@@ -30,7 +30,8 @@ const allowedOrigins = [
   'http://127.0.0.1:8080',
   'http://192.168.1.251:8080',
   'http://192.168.1.123:8080',
-  'https://playset-sprain-anatomy.ngrok-free.dev'
+  'https://playset-sprain-anatomy.ngrok-free.dev',
+  'https://easy-tickets-albania.netlify.app'
 ];
 
 if (process.env.CLIENT_URL) {
@@ -155,13 +156,15 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 // const host = '192.168.1.123';
 
+
+
 const server = app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
   console.log(`API available at http://test:${PORT}/api`);
   console.log(`Health check at http://test:${PORT}/api/health`);
 });
 
-// Handle unhandled promise rejections
+
 process.on('unhandledRejection', (err, promise) => {
   console.log(`Error: ${err.message}`);
   // Close server & exit process

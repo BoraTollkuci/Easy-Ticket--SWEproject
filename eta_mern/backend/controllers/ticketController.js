@@ -51,13 +51,19 @@ const getTickets = async (req, res, next) => {
       query.user = req.user.id;
     }
 
-    const tickets = await Ticket.find(query)
-      .populate('schedule', 'departureTime arrivalTime vehicleId status')
-      .populate('schedule.route', 'name code fare')
-      .populate('user', 'fullName email')
-      .sort({ purchaseDate: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+const tickets = await Ticket.find(query)
+  .populate({
+    path: 'schedule',
+    select: 'departureTime arrivalTime vehicleId status route',
+    populate: {
+      path: 'route',
+      select: 'name code fare'
+    }
+  })
+  .populate('user', 'fullName email')
+  .sort({ purchaseDate: -1 })
+  .limit(limit * 1)
+  .skip((page - 1) * limit);
 
     const total = await Ticket.countDocuments(query);
 
@@ -298,7 +304,7 @@ const createTicket = async (req, res, next) => {
 // @access  Private
 const updateTicket = async (req, res, next) => {
   try {
-    const { status, paymentStatus, cancellationReason } = req.body;
+    const { status, paymentStatus, paymentMethod, paymentReference, cancellationReason } = req.body;
     
     let query = { _id: req.params.id };
     
@@ -337,10 +343,18 @@ const updateTicket = async (req, res, next) => {
       if (paymentStatus) ticket.paymentStatus = paymentStatus;
     }
 
+    if (paymentMethod) {
+      ticket.paymentMethod = paymentMethod;
+    }
+
+    if (paymentReference !== undefined) {
+      ticket.paymentReference = paymentReference;
+    }
+
     await ticket.save();
 
     const updatedTicket = await Ticket.findById(ticket._id)
-      .populate('schedule', 'departureTime arrivalTime vehicleId status')
+      .populate('schedule', 'departureTime arrivalTime vehicleId status route')
       .populate('schedule.route', 'name code fare duration distance stations')
       .populate('schedule.route.stations', 'name code city state location')
       .populate('user', 'fullName email');
@@ -394,7 +408,7 @@ const confirmTicket = async (req, res, next) => {
     await ticket.save();
 
     const confirmedTicket = await Ticket.findById(ticket._id)
-      .populate('schedule', 'departureTime arrivalTime vehicleId status')
+      .populate('schedule', 'departureTime arrivalTime vehicleId status route')
       .populate('schedule.route', 'name code fare duration distance stations')
       .populate('schedule.route.stations', 'name code city state location')
       .populate('user', 'fullName email');
@@ -454,7 +468,7 @@ const checkInTicket = async (req, res, next) => {
     await createCheckInEntry({ ticket, busman: req.user });
 
     const updatedTicket = await Ticket.findById(ticket._id)
-      .populate('schedule', 'departureTime arrivalTime vehicleId status')
+      .populate('schedule', 'departureTime arrivalTime vehicleId status route')
       .populate('schedule.route', 'name code fare duration distance stations')
       .populate('schedule.route.stations', 'name code city state location')
       .populate('user', 'fullName email phone');
@@ -482,13 +496,22 @@ const getMyTickets = async (req, res, next) => {
       query.status = status;
     }
 
-    const tickets = await Ticket.find(query)
-      .populate('schedule', 'departureTime arrivalTime vehicleId status')
-      .populate('schedule.route', 'name code fare duration distance stations')
-      .populate('schedule.route.stations', 'name code city state location')
-      .sort({ purchaseDate: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+const tickets = await Ticket.find(query)
+  .populate({
+    path: 'schedule',
+    select: 'departureTime arrivalTime vehicleId status route',
+    populate: {
+      path: 'route',
+      select: 'name code fare duration distance stations',
+      populate: {
+        path: 'stations',
+        select: 'name code city state location'
+      }
+    }
+  })
+  .sort({ purchaseDate: -1 })
+  .limit(limit * 1)
+  .skip((page - 1) * limit);
 
     const total = await Ticket.countDocuments(query);
 
@@ -521,7 +544,7 @@ const getTicketsBySchedule = async (req, res, next) => {
 
     const tickets = await Ticket.find(query)
       .populate('user', 'fullName email phone')
-      .populate('schedule', 'departureTime arrivalTime vehicleId')
+      .populate('schedule', 'departureTime arrivalTime vehicleId status route')
       .populate('schedule.route', 'name code description')
       .sort({ purchaseDate: -1 })
       .limit(limit * 1)
